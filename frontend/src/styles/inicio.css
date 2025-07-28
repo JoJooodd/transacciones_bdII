@@ -81,3 +81,10 @@ h1 {
     background-color: #45a049;
     transform: scale(1.05);
 }
+
+.contenedor-botones button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    transform: none;
+}

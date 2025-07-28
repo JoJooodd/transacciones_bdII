@@ -6,6 +6,7 @@ function Inicio() {
 
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
+    const [activo, setActivo] = useState(false);
 
     async function beginTransaction() {
         try{
@@ -83,12 +84,19 @@ function Inicio() {
                     </div>
                 </form>
 
-            <div className="contenedor-botones">
-                <button onClick={beginTransaction} >Transaccion</button>
-                <button onClick={() => insertUser(nombre, apellido)}>Insertar</button>
-                <button onClick={commitTransaction}>Commit</button>
-                <button onClick={rollbackTransaction}>Rollback</button>
-            </div>
+                <div className="contenedor-botones">
+                    <button onClick={() => {
+                        setActivo(true);
+                        beginTransaction();}}
+                        disabled={activo}>Transaccion</button>
+                    <button onClick={() => insertUser(nombre, apellido)} disabled={!activo}>Insertar</button>
+                    <button onClick={() => {
+                        setActivo(false);
+                        commitTransaction();}}  disabled={!activo}>Commit</button>
+                    <button onClick={() => {
+                        setActivo(false);
+                        rollbackTransaction();}} disabled={!activo}>Rollback</button>
+                </div>
 
             </div>
         </div>

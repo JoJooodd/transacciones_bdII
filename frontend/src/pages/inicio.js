@@ -89,7 +89,11 @@ function Inicio() {
                         setActivo(true);
                         beginTransaction();}}
                         disabled={activo}>Transaccion</button>
-                    <button onClick={() => insertUser(nombre, apellido)} disabled={!activo}>Insertar</button>
+                    <button onClick={() => { 
+                        setNombre('');
+                        setApellido('');
+                        insertUser(nombre, apellido);}
+                        } disabled={!activo}>Insertar</button>
                     <button onClick={() => {
                         setActivo(false);
                         commitTransaction();}}  disabled={!activo}>Commit</button>

@@ -30,6 +30,7 @@ export const insertarUsuario = (
     if (!connection) return callback(new Error('Transacción no iniciada') as mysql.QueryError);
 
     const query = 'INSERT INTO users (nombre, apellido) VALUES (?, ?)';
+    console.log(`Usuario Guardado Temporalmente ${nombre}, ${apellido}`)
     connection.query(query, [nombre, apellido], callback);
 };
 

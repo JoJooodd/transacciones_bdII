@@ -1,11 +1,52 @@
 import '../styles/inicio.css';
 import React, { useState } from 'react';
-
+import api from '../utils/axios';
 
 function Inicio() {
 
     const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
+
+    async function beginTransaction() {
+        try{
+            const response = await api.post("/transaccion/iniciar")
+            console.log("Transacción Iniciada Correctamente")
+        } catch (err){
+            throw err
+        }
+    }
+
+    async function insertUser(nombre, apellido) {
+        try{
+            const response = await api.post("/transaccion/insertar", {
+                nombre: nombre,
+                apellido: apellido
+            })
+            console.log(`Nombre: ${nombre}`)
+            console.log(`Apellido: ${apellido}`)
+            console.log("---------------------------------")
+        } catch (err){
+            throw err
+        }
+    }
+
+    async function commitTransaction() {
+        try{
+            const response = await api.post("/transaccion/commit")
+            console.log("Commit Exitoso :)")
+        }catch (err){
+            throw err
+        }
+    }
+
+    async function rollbackTransaction() {
+        try{
+            const response = await api.post("/transaccion/rollback")
+            console.log("Rollback Exitoso :(")
+        }catch (err){
+            throw err
+        }
+    }
 
     return (
         <div className="contenedor-inicial">
@@ -43,10 +84,10 @@ function Inicio() {
                 </form>
 
             <div className="contenedor-botones">
-                <button >Transaccion</button>
-                <button >Insertar</button>
-                <button >Commit</button>
-                <button >Rollback</button>
+                <button onClick={beginTransaction} >Transaccion</button>
+                <button onClick={() => insertUser(nombre, apellido)}>Insertar</button>
+                <button onClick={commitTransaction}>Commit</button>
+                <button onClick={rollbackTransaction}>Rollback</button>
             </div>
 
             </div>

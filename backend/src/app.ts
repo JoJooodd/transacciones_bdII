@@ -3,7 +3,7 @@ import cors from 'cors';
 import transaccionRoutes from './routes/transactionRoutes';
 
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
 
 // Permite recibir JSON y peticiones desde otro puerto (como React)
 

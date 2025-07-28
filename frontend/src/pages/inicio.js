@@ -49,6 +49,14 @@ function Inicio() {
         }
     }
 
+    function msgCommitExitoso() {
+        alert("Commit Exitoso");
+    }
+
+    function msgRollBackExitoso() {
+        alert("Rollback Exitoso");
+    }
+
     return (
         <div className="contenedor-inicial">
 
@@ -96,10 +104,12 @@ function Inicio() {
                         } disabled={!activo}>Insertar</button>
                     <button onClick={() => {
                         setActivo(false);
-                        commitTransaction();}}  disabled={!activo}>Commit</button>
+                        commitTransaction();
+                        msgCommitExitoso();}}  disabled={!activo}>Commit</button>
                     <button onClick={() => {
                         setActivo(false);
-                        rollbackTransaction();}} disabled={!activo}>Rollback</button>
+                        rollbackTransaction();
+                        msgRollBackExitoso()}} disabled={!activo}>Rollback</button>
                 </div>
 
             </div>

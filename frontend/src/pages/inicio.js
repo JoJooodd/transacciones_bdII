@@ -24,19 +24,8 @@ function Inicio() {
 
     const [transaccionActivar, setTransaccionActivar] = useState(false);
 
-    // Datos de ejemplo para mostrar
-    const personas = [
-        { id: 1, nombre: "Alejandro", apellido: "Calderón" },
-        { id: 2, nombre: "María", apellido: "López" },
-        { id: 3, nombre: "Carlos", apellido: "Ramírez" },
-        { id: 4, nombre: "Lucía", apellido: "Fernández" },
-        { id: 5, nombre: "Javier", apellido: "Martínez" },
-        { id: 6, nombre: "Ana", apellido: "Gómez" },
-        { id: 7, nombre: "Pedro", apellido: "Sánchez" },
-        { id: 8, nombre: "Laura", apellido: "Torres" },
-        { id: 9, nombre: "Diego", apellido: "Pérez" },
-        { id: 10, nombre: "Clara", apellido: "Ramírez" }
-    ];
+    const [personas, setPersonas] = useState([]);
+
     const [mostrar, setMostrar] = useState(false);
 
     // Id de la persona seleccionada para actualizar/eliminar
@@ -58,22 +47,31 @@ function Inicio() {
     };
 
     const aislamientoVars = [
-        { id: 1, nivel: "Read Uncommitted" },
-        { id: 2, nivel: "Read Committed" },
-        { id: 3, nivel: "Repeatable Read" },
-        { id: 4, nivel: "Serializable" }
+        { id: 1, nivel: 'READ UNCOMMITTED' },
+        { id: 2, nivel: 'READ COMMITTED' },
+        { id: 3, nivel: 'REPEATABLE READ' },
+        { id: 4, nivel: 'SERIALIZABLE' }
     ]
 
     const [aislamiento, setAislamiento] = useState(0);
 
+    const [nombreAislamiento, setNombreAislamiento] = useState("");
+
     const handleSelectAislamiento = (e) => {
         const id = Number(e.target.value);
+
         setAislamiento(id);
+        setNombreAislamiento(aislamientoVars.find(a => a.id === id)?.nivel || "");
+
     }
 
     async function beginTransaction() {
         try{
-            const response = await api.post("/transaccion/iniciar")
+            
+            const response = await api.post("/transaccion/iniciar");
+
+            await getUsers();
+
             console.log("Transacción Iniciada Correctamente")
         } catch (err){
             throw err
@@ -89,9 +87,68 @@ function Inicio() {
             console.log(`Nombre: ${nombre}`)
             console.log(`Apellido: ${apellido}`)
             console.log("---------------------------------")
+
+            await getUsers();
+
         } catch (err){
             throw err
         }
+    }
+
+    async function getUsers() {
+        try{
+            const response = await api.get("/transaccion/getUsers");
+
+            setPersonas(response.data);
+
+        } catch (err){
+            throw err
+        }
+        
+    }
+
+    async function updateUser(id, nombre, apellido) {
+        try{
+            
+            await api.put('/transaccion/updateUser', {
+                id: id,
+                nombre: nombre,
+                apellido: apellido
+            })
+
+            console.log(`ID a Modificar: ${id}`)
+            console.log(`Datos Nuevos\nNombre:${nombre} - Apellido: ${apellido}`)
+
+        } catch (err){
+            throw err
+        }
+    }
+
+    async function deleteUser(id) {
+        try{
+            
+            await api.delete(`/transaccion/deleteUser/${id}`)
+
+
+            // imprimir nombre a eliminar
+
+        } catch (err){
+            throw err
+        }
+        
+    }
+
+    async function changeIsolationLevel(nivel) {
+        try{
+
+            await api.post("/transaccion/isolation", {nivel: nivel})
+            
+            console.log(`-----------Nivel actualizado: ${nivel}----------`)
+
+        } catch (err) {
+            throw err
+        }
+        
     }
 
     async function commitTransaction() {
@@ -139,7 +196,8 @@ function Inicio() {
                         ))}
                     </select>
                 </div>
-                <button onClick={() => { 
+                <button onClick={() => {
+                    changeIsolationLevel(nombreAislamiento)
                     setNivelActivo(false);
                     setTransaccionActivar(true);
                 }} disabled={activo || !nivelActivo}>
@@ -258,10 +316,11 @@ function Inicio() {
                                 onChange={(e) => setNewApellido(e.target.value)}>
                             </input>
                         </div>
-                        <button onClick={() => { 
-                            setNombre('');
-                            setApellido('');
-                            insertUser(nombre, apellido);}
+                        <button type="button" onClick={() => { 
+                            updateUser(id_actual, new_nombre, new_apellido)
+                            setNewNombre('')
+                            setNewApellido('')
+                        }
                             } disabled={!activo}>Actualizar</button>
                     </form>
                 </div>
@@ -289,10 +348,10 @@ function Inicio() {
                             </select>
                         </div>
                         
-                        <button onClick={() => { 
+                        <button type="button" onClick={() => { 
                             setNombre('');
                             setApellido('');
-                            insertUser(nombre, apellido);}
+                            deleteUser(idEliminar);}
                             } disabled={!activo}>Eliminar</button>
                     </form>
                 </div>
@@ -319,7 +378,11 @@ function Inicio() {
                     </div>
                     <h1>Datos actuales</h1>
                     <div>
-                        <button onClick={() => setMostrar(!mostrar)} disabled={!activo}>
+                        <button onClick={() => {
+                            getUsers()
+                            setMostrar(!mostrar)
+                            }
+                        } disabled={!activo}>
                             {mostrar ? "Ocultar" : "Mostrar"} lista
                         </button>
 

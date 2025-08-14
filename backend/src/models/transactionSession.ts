@@ -99,7 +99,7 @@ export const setIsolationLevel = (
             database: 'ht3_transactions'
         });
         
-        const query = `SET TRANSACTION ISOLATION LEVEL ${nivel}`;
+        const query = `SET SESSION TRANSACTION ISOLATION LEVEL ${nivel}`;
         connection.query(query, (err) => {
             if (err) {
                 console.error('Error al cambiar nivel de aislamiento:', err);
@@ -111,7 +111,19 @@ export const setIsolationLevel = (
     });
 
     } else {
-        return callback(new Error('Transacción iniciada') as mysql.QueryError);
+        try{
+            const query = `SET SESSION TRANSACTION ISOLATION LEVEL ${nivel}`;
+            connection.query(query, (err) => {
+                if (err) {
+                    console.error('Error al cambiar nivel de aislamiento:', err);
+                    return callback(err);
+                }
+            console.log(`Nivel de aislamiento cambiado a ${nivel}`);
+            callback(null);
+            })
+        } catch (err) {
+            throw err
+        }
     }
 };
 

@@ -44,6 +44,10 @@ function Inicio() {
     const handleSelectEliminar = (e) => {
         const id = Number(e.target.value);
         setIdEliminar(id);
+
+        const persona = personas.find((p) => p.id === id);
+        setKeepNombre(persona?.nombre ?? "");
+        setKeepApellido(persona?.apellido ?? "");
     };
 
     const aislamientoVars = [
@@ -95,6 +99,10 @@ function Inicio() {
         }
     }
 
+    async function refreshData() {
+        await getUsers();
+    }
+
     async function getUsers() {
         try{
             const response = await api.get("/transaccion/getUsers");
@@ -130,7 +138,7 @@ function Inicio() {
             await api.delete(`/transaccion/deleteUser/${id}`)
 
 
-            // imprimir nombre a eliminar
+            console.log(`ID a Eliminar: ${id} con nombre: ${keep_nombre} y apellido: ${keep_apellido}`)
 
         } catch (err){
             throw err
@@ -207,6 +215,12 @@ function Inicio() {
 
             <div className="contenedor-botones">
                 <button onClick={() => {
+                    refreshData();
+                }} disabled={!activo}>Actualizar Datos</button>
+            </div>
+
+            <div className="contenedor-botones">
+                <button onClick={() => {
                     setActivo(true);
                     beginTransaction();}}
                     disabled={!transaccionActivar || activo}>Transaccion</button>
@@ -215,13 +229,15 @@ function Inicio() {
                     setNivelActivo(true);
                     setTransaccionActivar(false);
                     commitTransaction();
-                    msgCommitExitoso();}}  disabled={!activo}>Commit</button>
+                    msgCommitExitoso();
+                    refreshData();}}  disabled={!activo}>Commit</button>
                 <button onClick={() => {
                     setActivo(false);
                     setNivelActivo(true);
                     setTransaccionActivar(false);
                     rollbackTransaction();
-                    msgRollBackExitoso()}} disabled={!activo}>Rollback</button>
+                    msgRollBackExitoso();
+                    refreshData();}} disabled={!activo}>Rollback</button>
             </div>
 
             <div className="contenedor-funciones">

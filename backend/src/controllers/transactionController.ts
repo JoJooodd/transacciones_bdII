@@ -3,7 +3,11 @@ import {
     iniciarTransaccion,
     insertarUsuario,
     commitTransaccion,
-    rollbackTransaccion
+    rollbackTransaccion,
+    getUsers,
+    setIsolationLevel,
+    updateUser,
+    deleteUser
 } from '../models/transactionSession';
 
 export const iniciar = (_: Request, res: Response) => {
@@ -22,6 +26,49 @@ export const insertar = (req: Request, res: Response) => {
         return res.status(500).json({ error: 'Error al insertar' });
     }
     res.json({ message: 'Usuario insertado (sin confirmar)' });
+    });
+};
+
+export const changeIsolationLevel = (req: Request, res: Response) => {
+    const { nivel } = req.body;
+
+    setIsolationLevel(nivel, (err) => {
+        if (err) {
+            return res.status(500).json({ error: 'No se pudo cambiar el nivel de aislamiento' });
+        }
+        res.status(200).json({ mensaje: `Nivel de aislamiento cambiado a ${nivel}` });
+    });
+};
+
+export const obtenerUsuarios = (_req: Request, res: Response) => {
+    getUsers((err, results) => {
+        if (err) {
+            console.log(err)
+            return res.status(500).json({ error: 'Error al obtener usuarios' });
+        }
+        res.status(200).json(results);
+    });
+};
+
+export const actualizarUsuario = (req: Request, res: Response) => {
+    const {id, nombre, apellido } = req.body;
+    
+    updateUser(id, nombre, apellido, (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al actualizar usuario' });
+        }
+        res.status(200).json(results);
+    });
+};
+
+export const eliminarUsuario = (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+
+    deleteUser(id, (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al eliminar usuario' });
+        }
+        res.status(200).json(results);
     });
 };
 
